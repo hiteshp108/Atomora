@@ -1,0 +1,8 @@
+{% import 'elementor/macros' as m %}
+<{{ tag | e('html_tag') }} class="{{ m.render_base_classes(id, base_styles, settings, ['atomora-reviews'], tag) }} {{ editor_classes | default('') }}"
+    {{- ' ' }}{{ m.render_data_attributes(id, type, interaction_id) }}
+    {{- ' ' }}data-atomora-reviews-list="1" data-product-id="{{ product_id | default('') }}" data-pagination="{{ pagination | default('') }}" data-page="1" data-total-pages="{{ total_pages | default('') }}" data-doc-id="{{ doc_id | default('') }}"
+    {{- m.render_link_attributes(settings.link | default(null)) }}
+    {{- m.render_custom_attributes(settings, editor_attributes) }}>
+    <!-- elementor-children-placeholder -->
+</{{ tag | e('html_tag') }}>

@@ -1,0 +1,25 @@
+{% import 'elementor/macros' as m %}
+{%- set field = settings.field | default('comment') -%}
+{%- set labels = { 'rating': 'Your rating', 'comment': 'Your review', 'author': 'Name', 'email': 'Email' } -%}
+{%- set label = settings.label | default('') -%}
+{%- if label is empty -%}{%- set label = default_label | default(labels[field]) -%}{%- endif -%}
+{%- set classes = settings.classes | default([]) | merge( [ 'atomora-review', 'atomora-review--form-field', 'atomora-review--field-' ~ field ] ) | join(' ') -%}
+{%- if show is not defined or show -%}
+<{{ tag | e('html_tag') }} class="{{ classes }}" data-interaction-id="{{ interaction_id }}"
+	{{- m.render_custom_attributes(settings) }}>
+{%- if field == 'rating' -%}
+<span class="atomora-review__label">{{ label }}{% if rating_required is not defined or rating_required %} <span class="atomora-review__required">*</span>{% endif %}</span>
+<div class="atomora-review__rating-input" role="radiogroup">
+{%- for i in [5, 4, 3, 2, 1] -%}
+<input type="radio" name="rating" id="atomora-r{{ i }}-{{ id }}" value="{{ i }}"{% if rating_required is not defined or rating_required %} required{% endif %}><label for="atomora-r{{ i }}-{{ id }}" title="{{ i }}">★</label>
+{%- endfor -%}
+</div>
+{%- elseif field == 'comment' -%}
+<label class="atomora-review__label" for="atomora-comment-{{ id }}">{{ label }} <span class="atomora-review__required">*</span></label>
+<textarea id="atomora-comment-{{ id }}" name="comment" rows="5" required></textarea>
+{%- else -%}
+<label class="atomora-review__label" for="atomora-{{ field }}-{{ id }}">{{ label }} <span class="atomora-review__required">*</span></label>
+<input id="atomora-{{ field }}-{{ id }}" name="{{ field }}" type="{{ field == 'email' ? 'email' : 'text' }}" required>
+{%- endif -%}
+</{{ tag | e('html_tag') }}>
+{%- endif -%}

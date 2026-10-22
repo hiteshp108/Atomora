@@ -1,0 +1,478 @@
+/* Atomora — Gallery Slider
+ * Kept intentionally small and dependency-free. Colors fall back through
+ * Elementor's global CSS variables where available, then to a sane default,
+ * so the slider inherits your theme's primary color automatically.
+ */
+.atomora-gallery-slider {
+	--atomora-primary: var(--e-a-color-primary, var(--e-global-color-primary, #6d28d9));
+	--atomora-border: rgba(0, 0, 0, 0.08);
+	--atomora-bg: #fff;
+
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: 100%;
+	min-width: 240px;
+	box-sizing: border-box;
+}
+
+.atomora-gallery-slider *,
+.atomora-gallery-slider *::before,
+.atomora-gallery-slider *::after {
+	box-sizing: border-box;
+}
+
+.atomora-gallery-slider__main {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	min-height: 0;
+	max-height: 80vh;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	border-radius: 8px;
+	background: var(--atomora-bg);
+	border: 1px solid var(--atomora-border);
+}
+
+/* "Viewport" — fills the screen height rather than deriving height from a
+   fixed ratio. Uses svh (small viewport height) where supported, which
+   avoids the classic mobile "100vh taller than the visible area" jank
+   caused by the address bar showing/hiding; falls back to vh everywhere
+   else. This intentionally overrides the 80vh safety cap above, since a
+   full-height hero slider is meant to reach the actual screen edge. */
+.atomora-gallery-slider[data-ratio="viewport"] .atomora-gallery-slider__main {
+	aspect-ratio: unset !important;
+	height: 100vh !important;
+	height: 100svh !important;
+	max-height: 100vh !important;
+	max-height: 100svh !important;
+}
+
+/* Image ratio presets. "auto" is handled separately further down, since it
+   needs the slide/image rules to change too, not just the ratio. */
+.atomora-gallery-slider[data-ratio="1x1"] .atomora-gallery-slider__main { aspect-ratio: 1 / 1 !important; }
+.atomora-gallery-slider[data-ratio="4x3"] .atomora-gallery-slider__main { aspect-ratio: 4 / 3 !important; }
+.atomora-gallery-slider[data-ratio="3x4"] .atomora-gallery-slider__main { aspect-ratio: 3 / 4 !important; }
+.atomora-gallery-slider[data-ratio="16x9"] .atomora-gallery-slider__main { aspect-ratio: 16 / 9 !important; }
+.atomora-gallery-slider[data-ratio="9x16"] .atomora-gallery-slider__main { aspect-ratio: 9 / 16 !important; }
+.atomora-gallery-slider[data-ratio="3x2"] .atomora-gallery-slider__main { aspect-ratio: 3 / 2 !important; }
+.atomora-gallery-slider[data-ratio="2x3"] .atomora-gallery-slider__main { aspect-ratio: 2 / 3 !important; }
+
+.atomora-gallery-slider__slide {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	opacity: 0;
+	/* Was `visibility: hidden` — visibility isn't a value that can ease
+	   between states, so with no transition-delay it switched instantly
+	   the moment .is-active was removed, cutting the opacity fade-out off
+	   before it could be seen. The crossfade only ever looked smooth on
+	   the way IN, never on the way out. pointer-events achieves the same
+	   "don't let me click the hidden slide" goal without that problem. */
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.45s ease;
+}
+
+.atomora-gallery-slider__slide.is-active {
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 2;
+}
+
+.atomora-gallery-slider__link,
+.atomora-gallery-slider__image {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+/* Image fit — cover/contain/fill, independent of ratio. */
+.atomora-gallery-slider[data-fit="cover"] .atomora-gallery-slider__image { object-fit: cover !important; }
+.atomora-gallery-slider[data-fit="contain"] .atomora-gallery-slider__image { object-fit: contain !important; }
+.atomora-gallery-slider[data-fit="fill"] .atomora-gallery-slider__image { object-fit: fill !important; }
+
+/* "Auto" ratio = show each image at its own natural size (no forced crop,
+   no letterboxing). This needs a different layout strategy: instead of
+   stacking all slides absolutely (which requires a fixed-height container),
+   only the active slide is in the flow at all, so the container's height
+   naturally follows whichever image is showing. The `data-fit` setting is
+   irrelevant in this mode since there's no fixed box to fit into. */
+.atomora-gallery-slider[data-ratio="auto"] .atomora-gallery-slider__main {
+	aspect-ratio: auto !important;
+	/* The 80vh safety cap on the base .main rule exists to stop fixed
+	   ratios from running away with flex-grow (see the desktop/tablet/
+	   mobile row-mode rules further down). It directly contradicts what
+	   "Auto" promises — a tall/portrait photo would get silently clipped
+	   by that cap combined with overflow:hidden, which is worse than the
+	   problem the cap was meant to solve. Auto's height is already fully
+	   content-driven (no flex-grow involved), so it has no runaway-growth
+	   risk to guard against in the first place. */
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+.atomora-gallery-slider[data-ratio="auto"] .atomora-gallery-slider__slide {
+	position: static !important;
+	opacity: 1 !important;
+	visibility: visible !important;
+	display: none !important;
+	transition: none !important;
+}
+
+.atomora-gallery-slider[data-ratio="auto"] .atomora-gallery-slider__slide.is-active {
+	display: block !important;
+}
+
+.atomora-gallery-slider[data-ratio="auto"] .atomora-gallery-slider__image {
+	height: auto !important;
+	max-height: none !important;
+	object-fit: initial !important;
+}
+
+.atomora-gallery-slider__image {
+	cursor: default;
+}
+
+/* Hover zoom (WooCommerce-style): .main needs overflow:hidden, which it
+   already has above, so the scaled-up image clips to the box instead of
+   spilling over the layout. transform-origin is set per-mousemove via JS
+   custom properties, so the zoom follows the cursor rather than always
+   zooming from center. Scale amount is also JS-controlled (data-hover-
+   zoom-scale), read into the same custom property, so the widget's
+   control actually changes it rather than this value being fixed. */
+.atomora-gallery-slider[data-hover-zoom="1"] .atomora-gallery-slider__main {
+	overflow: hidden;
+}
+
+.atomora-gallery-slider[data-hover-zoom="1"] .atomora-gallery-slider__image {
+	transition: transform 0.2s ease;
+	transform-origin: var(--atomora-zoom-x, 50%) var(--atomora-zoom-y, 50%);
+	will-change: transform;
+}
+
+.atomora-gallery-slider[data-hover-zoom="1"] .atomora-gallery-slider__slide.is-active:hover .atomora-gallery-slider__image {
+	transform: scale(var(--atomora-zoom-scale, 1.8));
+	cursor: zoom-in;
+}
+
+/* Touch devices have no real hover — forcing it off avoids a stuck zoom
+   state after a tap, which can't "un-hover" the way a mouse can. */
+@media (hover: none) {
+	.atomora-gallery-slider[data-hover-zoom="1"] .atomora-gallery-slider__slide.is-active:hover .atomora-gallery-slider__image {
+		transform: none;
+	}
+}
+
+.atomora-gallery-slider[data-lightbox="1"] .atomora-gallery-slider__image {
+	cursor: zoom-in;
+}
+
+.atomora-gallery-slider__arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 3;
+	width: 36px;
+	height: 36px;
+	border: none;
+	border-radius: 50%;
+	background: #000;
+	color: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	line-height: 1;
+	padding: 0;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.atomora-gallery-slider__arrow:hover {
+	background: #fff;
+	color: #000;
+}
+
+.atomora-gallery-slider__arrow--prev {
+	left: 10px;
+}
+
+.atomora-gallery-slider__arrow--next {
+	right: 10px;
+}
+
+/* Thumbnails — the "grid-to-slider" hybrid strip */
+.atomora-gallery-slider__thumbs {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 64px;
+	gap: 8px;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	padding-bottom: 2px;
+}
+
+.atomora-gallery-slider__thumb {
+	width: 64px;
+	height: 64px;
+	padding: 0;
+	border-radius: 6px;
+	border: 2px solid transparent;
+	background: var(--atomora-bg);
+	overflow: hidden;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.atomora-gallery-slider__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.atomora-gallery-slider__thumb.is-active,
+.atomora-gallery-slider__thumb:hover {
+	border-color: var(--atomora-primary);
+}
+
+/*
+ * Thumbnail position — desktop / tablet / mobile, fully independent.
+ * Breakpoints match common defaults: mobile ≤767px, tablet 768–1024px,
+ * desktop ≥1025px. Server-side, "inherit" is already resolved to a concrete
+ * value before this HTML is rendered, so every data-thumbs-* attribute
+ * below always holds one of: bottom, left, right, none — never "inherit" —
+ * which is what makes these plain, unambiguous overrides.
+ */
+
+/* Desktop is the base — applies at all widths unless a narrower breakpoint
+   below explicitly overrides it. */
+.atomora-gallery-slider[data-thumbs-desktop="left"],
+.atomora-gallery-slider[data-thumbs-desktop="right"] {
+	flex-direction: row !important;
+	align-items: stretch !important;
+}
+
+.atomora-gallery-slider[data-thumbs-desktop="left"] .atomora-gallery-slider__main {
+	order: 2 !important;
+}
+
+.atomora-gallery-slider[data-thumbs-desktop="left"] .atomora-gallery-slider__thumbs,
+.atomora-gallery-slider[data-thumbs-desktop="right"] .atomora-gallery-slider__thumbs {
+	grid-auto-flow: row !important;
+	grid-auto-columns: unset !important;
+	grid-auto-rows: 64px !important;
+	min-height: 0 !important;
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
+	flex: 0 0 76px !important;
+}
+
+.atomora-gallery-slider[data-thumbs-desktop="left"] .atomora-gallery-slider__main,
+.atomora-gallery-slider[data-thumbs-desktop="right"] .atomora-gallery-slider__main {
+	flex: 1 1 0 !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	align-self: flex-start !important;
+}
+
+.atomora-gallery-slider[data-thumbs-desktop="none"] .atomora-gallery-slider__thumbs {
+	display: none !important;
+}
+
+/* Tablet override — only kicks in at ≤1024px, and fully resets whatever
+   the desktop rules above did (row/column, order, display) rather than
+   just adding to it, so any desktop value can be overridden cleanly. */
+@media (max-width: 1024px) {
+	.atomora-gallery-slider[data-thumbs-tablet="bottom"] {
+		flex-direction: column !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="bottom"] .atomora-gallery-slider__main {
+		order: initial !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="bottom"] .atomora-gallery-slider__thumbs {
+		display: grid !important;
+		grid-auto-flow: column !important;
+		grid-auto-columns: 64px !important;
+		grid-auto-rows: unset !important;
+		max-height: none !important;
+		overflow-y: visible !important;
+		overflow-x: auto !important;
+		flex: initial !important;
+	}
+
+	.atomora-gallery-slider[data-thumbs-tablet="left"],
+	.atomora-gallery-slider[data-thumbs-tablet="right"] {
+		flex-direction: row !important;
+		align-items: stretch !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="left"] .atomora-gallery-slider__main {
+		order: 2 !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="right"] .atomora-gallery-slider__main {
+		order: initial !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="left"] .atomora-gallery-slider__thumbs,
+	.atomora-gallery-slider[data-thumbs-tablet="right"] .atomora-gallery-slider__thumbs {
+		display: grid !important;
+		grid-auto-flow: row !important;
+		grid-auto-columns: unset !important;
+		grid-auto-rows: 64px !important;
+		min-height: 0 !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		flex: 0 0 76px !important;
+	}
+	.atomora-gallery-slider[data-thumbs-tablet="left"] .atomora-gallery-slider__main,
+	.atomora-gallery-slider[data-thumbs-tablet="right"] .atomora-gallery-slider__main {
+		flex: 1 1 0 !important;
+		min-width: 0 !important;
+		min-height: 0 !important;
+		align-self: flex-start !important;
+	}
+
+	.atomora-gallery-slider[data-thumbs-tablet="none"] .atomora-gallery-slider__thumbs {
+		display: none !important;
+	}
+}
+
+/* Mobile override — ≤767px, same full-reset pattern as tablet above. */
+@media (max-width: 767px) {
+	.atomora-gallery-slider[data-thumbs-mobile="bottom"] {
+		flex-direction: column !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="bottom"] .atomora-gallery-slider__main {
+		order: initial !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="bottom"] .atomora-gallery-slider__thumbs {
+		display: grid !important;
+		grid-auto-flow: column !important;
+		grid-auto-columns: 64px !important;
+		grid-auto-rows: unset !important;
+		max-height: none !important;
+		overflow-y: visible !important;
+		overflow-x: auto !important;
+		flex: initial !important;
+	}
+
+	.atomora-gallery-slider[data-thumbs-mobile="left"],
+	.atomora-gallery-slider[data-thumbs-mobile="right"] {
+		flex-direction: row !important;
+		align-items: stretch !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="left"] .atomora-gallery-slider__main {
+		order: 2 !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="right"] .atomora-gallery-slider__main {
+		order: initial !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="left"] .atomora-gallery-slider__thumbs,
+	.atomora-gallery-slider[data-thumbs-mobile="right"] .atomora-gallery-slider__thumbs {
+		display: grid !important;
+		grid-auto-flow: row !important;
+		grid-auto-columns: unset !important;
+		grid-auto-rows: 64px !important;
+		min-height: 0 !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		flex: 0 0 76px !important;
+	}
+	.atomora-gallery-slider[data-thumbs-mobile="left"] .atomora-gallery-slider__main,
+	.atomora-gallery-slider[data-thumbs-mobile="right"] .atomora-gallery-slider__main {
+		flex: 1 1 0 !important;
+		min-width: 0 !important;
+		min-height: 0 !important;
+		align-self: flex-start !important;
+	}
+
+	.atomora-gallery-slider[data-thumbs-mobile="none"] .atomora-gallery-slider__thumbs {
+		display: none !important;
+	}
+}
+
+.atomora-gallery-slider__empty {
+	padding: 24px;
+	text-align: center;
+	border: 1px dashed var(--atomora-border);
+	border-radius: 8px;
+	color: #666;
+	margin: 0;
+}
+
+/* Lightbox */
+.atomora-gallery-slider__lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	background: rgba(0, 0, 0, 0.9);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.atomora-gallery-slider__lightbox[hidden] {
+	display: none;
+}
+
+.atomora-gallery-slider__lightbox-image {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	cursor: zoom-out;
+}
+
+.atomora-gallery-slider__lightbox-arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1;
+	width: 44px;
+	height: 44px;
+	border: none;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.9);
+	color: #000;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+	line-height: 1;
+	padding: 0;
+	transition: background 0.2s ease;
+}
+
+.atomora-gallery-slider__lightbox-arrow:hover {
+	background: #fff;
+}
+
+.atomora-gallery-slider__lightbox-arrow--prev {
+	left: 16px;
+}
+
+.atomora-gallery-slider__lightbox-arrow--next {
+	right: 16px;
+}
+
+.atomora-gallery-slider__lightbox-close {
+	position: absolute;
+	top: 16px;
+	right: 24px;
+	background: transparent;
+	border: none;
+	color: #fff;
+	font-size: 32px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.atomora-gallery-slider__slide {
+		transition: none;
+	}
+}

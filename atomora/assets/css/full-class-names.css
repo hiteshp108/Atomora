@@ -1,0 +1,32 @@
+/*
+ * Editor Enhancement: Display Full Class Names
+ *
+ * Prevents Elementor from truncating long Atomic widget class names
+ * in the Style tab's Classes input area.
+ *
+ * Elementor uses MUI Chip components. The truncation happens at:
+ * 1. .MuiChip-label > div  -- inline style max-width: 10ch
+ * 2. .MuiChip-label        -- overflow: hidden + text-overflow: ellipsis
+ *
+ * We override both with !important since the inner div uses inline styles.
+ */
+
+#elementor-panel .MuiChip-label > div {
+	max-width: none !important;
+	overflow: visible !important;
+	text-overflow: unset !important;
+}
+
+#elementor-panel .MuiChip-label {
+	max-width: none !important;
+	overflow: visible !important;
+	text-overflow: unset !important;
+}
+
+#elementor-panel .MuiChip-root {
+	max-width: none !important;
+}
+
+#elementor-panel .MuiChipGroup-root {
+	flex-wrap: wrap !important;
+}

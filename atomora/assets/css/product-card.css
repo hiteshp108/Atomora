@@ -1,0 +1,499 @@
+/* Atomora — Product Card
+ * Normal state: image + badges + wishlist icon.
+ * Hover state: image swap, title/subtitle/swatches/price/Add to Cart panel
+ * slides up over the image. Colors fall back through Elementor's global
+ * CSS variables where available, same convention as the Gallery Slider.
+ */
+.atomora-product-card {
+	--atomora-pc-primary: var(--e-a-color-primary, var(--e-global-color-primary, #6d28d9));
+	--atomora-pc-danger: #e53935;
+	--atomora-pc-warning: #f59e0b;
+	--atomora-pc-success: #16a34a;
+	--atomora-pc-border: rgba(0, 0, 0, 0.08);
+	--atomora-pc-bg: #fff;
+
+	position: relative;
+	width: 100%;
+	border-radius: 12px;
+	overflow: hidden;
+	background: var(--atomora-pc-bg);
+	border: 1px solid var(--atomora-pc-border);
+	box-sizing: border-box;
+	font-family: inherit;
+}
+
+.atomora-product-card *,
+.atomora-product-card *::before,
+.atomora-product-card *::after {
+	box-sizing: border-box;
+}
+
+.atomora-product-card__media {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	background: #f4f4f5;
+}
+
+.atomora-product-card__media-link {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.atomora-product-card__image {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: opacity 0.35s ease, transform 0.5s ease;
+}
+
+.atomora-product-card__image--hover {
+	opacity: 0;
+}
+
+.atomora-product-card:hover .atomora-product-card__image--normal {
+	opacity: 0;
+}
+
+.atomora-product-card:hover .atomora-product-card__image--hover {
+	opacity: 1;
+	transform: scale(1.03);
+}
+
+/* Badges — top-left stack */
+.atomora-product-card__badges {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: flex-start;
+	pointer-events: none;
+}
+
+.atomora-product-card__badge {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.4;
+	color: #fff;
+	background: #111;
+}
+
+.atomora-product-card__badge--sale {
+	background: var(--atomora-pc-danger);
+}
+
+.atomora-product-card__badge--new {
+	background: var(--atomora-pc-primary);
+}
+
+.atomora-product-card__badge--low-stock {
+	background: var(--atomora-pc-warning);
+	color: #1a1a1a;
+}
+
+.atomora-product-card__badge--out-of-stock {
+	background: #6b7280;
+}
+
+.atomora-product-card__badge--shipping {
+	background: var(--atomora-pc-success);
+}
+
+/* Wishlist heart — top-right */
+.atomora-product-card__wishlist {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 3;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	border: none;
+	background: rgba(255, 255, 255, 0.92);
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.atomora-product-card__wishlist:hover {
+	transform: scale(1.08);
+}
+
+.atomora-product-card__wishlist[aria-pressed="true"] {
+	color: var(--atomora-pc-danger);
+}
+
+.atomora-product-card__wishlist[aria-pressed="true"] svg {
+	fill: currentColor;
+}
+
+/* Quick view eye icon — appears on hover, centered */
+.atomora-product-card__quick-view {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 3;
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	border: none;
+	background: rgba(255, 255, 255, 0.95);
+	color: #222;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	opacity: 0;
+	transform: translate(-50%, -50%) scale(0.85);
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	pointer-events: none;
+}
+
+.atomora-product-card:hover .atomora-product-card__quick-view {
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1);
+	pointer-events: auto;
+}
+
+.atomora-product-card__quick-view:hover {
+	background: var(--atomora-pc-primary);
+	color: #fff;
+}
+
+/* Sale countdown */
+.atomora-product-card__countdown {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	z-index: 3;
+	padding: 4px 10px;
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.75);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.atomora-product-card__countdown:empty {
+	display: none;
+}
+
+/* Hover panel — slides up over the image */
+.atomora-product-card__hover-panel {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 2;
+	padding: 14px;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 100%);
+	color: #fff;
+	transform: translateY(12px);
+	opacity: 0;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	pointer-events: none;
+}
+
+.atomora-product-card:hover .atomora-product-card__hover-panel {
+	transform: translateY(0);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.atomora-product-card__subtitle {
+	margin: 0 0 2px;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.85;
+}
+
+.atomora-product-card__title {
+	margin: 0 0 8px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.atomora-product-card__swatches {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.atomora-product-card__swatch {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 2px solid #fff;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+	padding: 0;
+	cursor: pointer;
+}
+
+.atomora-product-card__price {
+	font-size: 15px;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+
+.atomora-product-card__price del {
+	opacity: 0.65;
+	font-weight: 400;
+	margin-right: 6px;
+}
+
+.atomora-product-card__cart .button {
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 10px 14px;
+	border-radius: 8px;
+	background: #fff;
+	color: #111;
+	font-weight: 700;
+	border: none;
+	cursor: pointer;
+	text-decoration: none;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.atomora-product-card__cart .button:hover {
+	background: var(--atomora-pc-primary);
+	color: #fff;
+}
+
+/* Note text + rating now live inside the hover panel (see further up),
+   so they no longer add permanent height below the image. */
+.atomora-product-card__note {
+	margin: 0 0 8px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.atomora-product-card__rating {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 8px;
+	color: var(--atomora-pc-warning);
+}
+
+.atomora-product-card__stars {
+	position: relative;
+	display: inline-block;
+	line-height: 0;
+}
+
+.atomora-product-card__stars-empty,
+.atomora-product-card__stars-filled {
+	display: flex;
+	gap: 1px;
+}
+
+.atomora-product-card__stars-empty svg,
+.atomora-product-card__stars-filled svg {
+	flex-shrink: 0;
+}
+
+.atomora-product-card__stars-empty svg {
+	color: rgba(255, 255, 255, 0.35);
+}
+
+.atomora-product-card__stars-filled {
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	/* width set inline per-instance (e.g. 70% for a 3.5/5 rating) */
+}
+
+.atomora-product-card__stars-filled svg {
+	color: var(--atomora-pc-warning);
+}
+
+.atomora-product-card__rating-count {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.75);
+}
+
+.atomora-product-card__empty {
+	padding: 24px;
+	text-align: center;
+	border: 1px dashed var(--atomora-pc-border);
+	border-radius: 8px;
+	color: #666;
+	margin: 0;
+}
+
+.atomora-product-card__loop-warning {
+	padding: 24px;
+	text-align: center;
+	border: 1px dashed #d63638;
+	border-radius: 8px;
+	background: #fcf0f1;
+	color: #8a1f21;
+	margin: 0;
+}
+
+.atomora-loop-warning-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.55);
+}
+
+.atomora-loop-warning-modal__box {
+	max-width: 420px;
+	padding: 24px;
+	border-radius: 8px;
+	background: #fff;
+	color: #1d2327;
+	text-align: center;
+}
+
+.atomora-loop-warning-modal__box p {
+	margin: 12px 0 16px;
+}
+
+.atomora-loop-warning-modal__box button {
+	padding: 8px 20px;
+	border: 0;
+	border-radius: 4px;
+	background: #d63638;
+	color: #fff;
+	cursor: pointer;
+}
+
+/* Quick view modal */
+.atomora-quick-view {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.atomora-quick-view[hidden] {
+	display: none;
+}
+
+.atomora-quick-view__dialog {
+	position: relative;
+	width: 100%;
+	max-width: 720px;
+	max-height: 85vh;
+	overflow-y: auto;
+	background: #fff;
+	border-radius: 12px;
+	padding: 28px;
+}
+
+.atomora-quick-view__close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: none;
+	background: #f4f4f5;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.atomora-quick-view__loading,
+.atomora-quick-view__error {
+	padding: 40px;
+	text-align: center;
+	color: #6b7280;
+}
+
+.atomora-quick-view__layout {
+	display: flex;
+	gap: 24px;
+	flex-wrap: wrap;
+}
+
+.atomora-quick-view__image {
+	flex: 1 1 260px;
+	min-width: 0;
+}
+
+.atomora-quick-view__image img {
+	width: 100%;
+	height: auto;
+	border-radius: 8px;
+	display: block;
+}
+
+.atomora-quick-view__details {
+	flex: 1 1 280px;
+	min-width: 0;
+}
+
+.atomora-quick-view__title {
+	margin: 0 0 8px;
+	font-size: 22px;
+}
+
+.atomora-quick-view__price {
+	font-size: 18px;
+	font-weight: 700;
+	margin-bottom: 12px;
+}
+
+.atomora-quick-view__excerpt {
+	margin-bottom: 16px;
+	color: #4b5563;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.atomora-quick-view__full-link {
+	display: inline-block;
+	margin-top: 14px;
+	font-size: 13px;
+	color: var(--atomora-pc-primary, #6d28d9);
+	text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+	.atomora-quick-view__layout {
+		flex-direction: column;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.atomora-product-card__image,
+	.atomora-product-card__hover-panel,
+	.atomora-product-card__quick-view,
+	.atomora-product-card__wishlist {
+		transition: none;
+	}
+}

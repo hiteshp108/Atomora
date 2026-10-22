@@ -1,0 +1,250 @@
+/**
+ * Atomora - Add to Cart / Buy Now / Quantity / Variations
+ */
+
+/* --- Quantity --- */
+.atomora-atc-qty {
+	display: inline-flex;
+	align-items: stretch;
+	border: 1px solid #d1d5db;
+	overflow: hidden;
+}
+
+.atomora-atc-qty-minus,
+.atomora-atc-qty-plus {
+	border: none;
+	cursor: pointer;
+	width: 36px;
+	font-size: 16px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #f2f2f2;
+}
+
+.atomora-atc-qty-input {
+	width: 48px;
+	border: none;
+	border-left: 1px solid #d1d5db;
+	border-right: 1px solid #d1d5db;
+	text-align: center;
+	-moz-appearance: textfield;
+}
+
+.atomora-atc-qty-input::-webkit-outer-spin-button,
+.atomora-atc-qty-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* --- Buttons --- */
+.atomora-atc-add-btn,
+.atomora-atc-buy-btn {
+	border: none;
+	cursor: pointer;
+	padding: 10px 20px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #ffffff;
+	transition: opacity 0.15s;
+}
+
+.atomora-atc-add-btn:hover,
+.atomora-atc-buy-btn:hover {
+	opacity: 0.9;
+}
+
+.atomora-atc-add-btn:disabled,
+.atomora-atc-buy-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.atomora-atc-add-btn.is-loading,
+.atomora-atc-buy-btn.is-loading {
+	opacity: 0.7;
+	cursor: wait;
+}
+
+/* --- Variations --- */
+.atomora-atc-option {
+	margin-bottom: 10px;
+}
+
+.atomora-atc-option:last-child {
+	margin-bottom: 0;
+}
+
+/* Resets WooCommerce's own default spacing on this element, which we
+   render but otherwise leave empty until a variation is selected. */
+.atomora-atc-variations-wrap .single_variation_wrap,
+.atomora-atc-variations-wrap .woocommerce-variation {
+	margin: 0;
+	padding: 0;
+}
+
+.atomora-atc-option-label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.atomora-atc-option-control select {
+	width: 100%;
+	padding: 6px 8px;
+}
+
+/* Visually hidden but still functional/accessible — used by Variation:
+   Buttons to keep the real <select> WooCommerce's JS needs, while
+   showing custom buttons instead. Never display:none (would still work
+   for JS, but this is the standard accessible hiding technique). */
+.atomora-atc-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.atomora-atc-variation-buttons-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* Wrapped in :where() (zero specificity) so a custom class added via
+   the widget's own "Button CSS Classes" / "Selected Button CSS Classes"
+   fields always overrides these defaults, regardless of which
+   stylesheet happens to load last on the page. */
+:where(.atomora-atc-variation-btn) {
+	border: 1px solid #d1d5db;
+	background: #ffffff;
+	color: #000000;
+	padding: 8px 16px;
+	cursor: pointer;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+:where(.atomora-atc-variation-btn:hover) {
+	border-color: #000000;
+	background: #000000;
+	color: #ffffff;
+}
+
+:where(.atomora-atc-variation-btn.is-selected) {
+	border-color: #000000;
+	background: #000000;
+	color: #ffffff;
+}
+
+/* --- Status message --- */
+.atomora-atc-message {
+	margin-top: 8px;
+	font-size: 13px;
+}
+
+.atomora-atc-message.is-success {
+	color: #15803d;
+}
+
+.atomora-atc-message.is-error {
+	color: #dc2626;
+}
+
+/* --- Added-to-cart toast --- */
+.atomora-atc-toast {
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	z-index: 999999;
+	background: #15803d;
+	color: #fff;
+	padding: 12px 18px;
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	max-width: 320px;
+	transform: translateY(16px);
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.atomora-atc-toast.is-visible {
+	transform: translateY(0);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.atomora-atc-toast__text {
+	flex: 1;
+}
+
+.atomora-atc-toast__link {
+	color: #fff;
+	font-weight: 700;
+	text-decoration: underline;
+	white-space: nowrap;
+}
+
+.atomora-atc-toast__link:hover {
+	text-decoration: none;
+}
+
+.atomora-atc-toast__close {
+	background: transparent;
+	border: none;
+	color: #fff;
+	opacity: 0.8;
+	cursor: pointer;
+	font-size: 18px;
+	line-height: 1;
+	padding: 0;
+}
+
+.atomora-atc-toast__close:hover {
+	opacity: 1;
+}
+
+@media (max-width: 480px) {
+	.atomora-atc-toast {
+		left: 16px;
+		right: 16px;
+		bottom: 16px;
+		max-width: none;
+	}
+}
+
+.atomora-atc-empty {
+	opacity: 0.7;
+	font-style: italic;
+}
+/* --- Product Price --- */
+.atomora-atc-price .price {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.4em;
+}
+
+.atomora-atc-price del {
+	opacity: 0.6;
+}
+
+.atomora-atc-price ins {
+	text-decoration: none;
+}
+
+/* Product Price widget owns the price; hide WooCommerce's own variation price. */
+.atomora-atc-variations .woocommerce-variation-price {
+	display: none;
+}
