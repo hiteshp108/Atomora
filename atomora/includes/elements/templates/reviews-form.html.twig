@@ -1,0 +1,6 @@
+{% import 'elementor/macros' as m %}
+<form class="{{ m.render_base_classes(id, base_styles, settings, ['atomora-reviews-form'], 'form') }} {{ editor_classes | default('') }}" action="{{ form_action | default('') }}" method="post"{% if form_action is empty %} onsubmit="return false;"{% endif %}
+    {{- ' ' }}{{ m.render_data_attributes(id, type, interaction_id) }}
+    {{- m.render_custom_attributes(settings, editor_attributes) }}>
+    <!-- elementor-children-placeholder -->
+</form>

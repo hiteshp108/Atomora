@@ -1,0 +1,48 @@
+/* Atomora — styles for the Rating Summary, Reviews List and Review Form widgets (structure only). */
+.atomora-reviews__notice,.atomora-reviews__empty{margin:0;opacity:.7;font-size:14px}
+.atomora-reviews__title{margin:0 0 12px}
+
+/* Stars: fill driven by --rating (0–5) */
+.atomora-reviews__stars{--rating:0;display:inline-block;line-height:1;letter-spacing:2px;white-space:nowrap;
+	background:linear-gradient(90deg,#f5a623 calc(var(--rating)/5*100%),rgba(128,128,128,.35) 0);
+	-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+
+/* Summary */
+.atomora-reviews__overview{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.atomora-reviews__average{font-size:40px;font-weight:700;line-height:1}
+.atomora-reviews__count{display:block;font-size:14px;opacity:.8;margin-top:4px}
+.atomora-reviews__breakdown{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.atomora-reviews__row{display:flex;align-items:center;gap:10px;font-size:14px}
+.atomora-reviews__row-label{flex:0 0 auto;min-width:3.5em}
+.atomora-reviews__bar{flex:1 1 auto;height:8px;border-radius:999px;background:rgba(128,128,128,.25);position:relative;overflow:hidden}
+.atomora-reviews__bar-fill{position:absolute;top:0;left:0;height:100%;background:#f5a623;border-radius:999px}
+.atomora-reviews__row-count{flex:0 0 auto;min-width:2em;text-align:right}
+
+/* List */
+.atomora-reviews__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px}
+.atomora-reviews__item{display:flex;gap:14px}
+.atomora-reviews__avatar img{border-radius:50%;display:block}
+.atomora-reviews__body{flex:1 1 auto;min-width:0}
+.atomora-reviews__meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:4px}
+.atomora-reviews__verified{font-size:12px;opacity:.7}
+.atomora-reviews__date{font-size:12px;opacity:.7}
+.atomora-reviews__text{margin-top:6px}
+.atomora-reviews__text p{margin:0 0 .6em}
+.atomora-reviews__more,.atomora-reviews__page,.atomora-reviews__submit{cursor:pointer;font:inherit;padding:8px 16px;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit}
+.atomora-reviews__more{margin-top:20px}
+.atomora-reviews__more[disabled]{opacity:.5;cursor:default}
+.atomora-reviews__pages{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+.atomora-reviews__page.is-active{font-weight:700;background:rgba(128,128,128,.2)}
+
+/* Form */
+.atomora-reviews__form{display:flex;flex-direction:column;gap:14px}
+.atomora-reviews__field{display:flex;flex-direction:column;gap:6px}
+.atomora-reviews__label .required,.atomora-reviews__field .required{color:#c00}
+.atomora-reviews__field input[type=text],.atomora-reviews__field input[type=email],.atomora-reviews__field textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid rgba(128,128,128,.5);border-radius:4px;box-sizing:border-box;background:transparent;color:inherit}
+.atomora-reviews__rating-input{display:inline-flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px}
+.atomora-reviews__rating-input input{position:absolute;opacity:0;pointer-events:none}
+.atomora-reviews__rating-input label{font-size:26px;line-height:1;cursor:pointer;color:rgba(128,128,128,.4)}
+.atomora-reviews__rating-input input:checked ~ label,
+.atomora-reviews__rating-input label:hover,
+.atomora-reviews__rating-input label:hover ~ label{color:#f5a623}
+.atomora-reviews__rating-input input:focus-visible + label{outline:2px solid currentColor;outline-offset:2px}

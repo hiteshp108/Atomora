@@ -1,0 +1,114 @@
+/**
+ * Atomora - Tab Navigator Styles
+ *
+ * Bar injected between the classes area and style sections
+ * in the Atomic Element panel.
+ * Adapts to OS light/dark mode via prefers-color-scheme.
+ *
+ * @package Atomora
+ * @since 1.0.0
+ */
+
+/* ── Light mode (default) ──────────────────────────── */
+
+#atp-tab-toggle-bar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-bottom: 1px solid #e8e8e8;
+}
+
+.atp-search-wrap {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 8px;
+	height: 30px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	padding: 0 10px;
+	box-sizing: border-box;
+	transition: border-color 0.15s;
+}
+
+.atp-search-icon {
+	display: flex;
+	align-items: center;
+	color: #bbb;
+	flex-shrink: 0;
+}
+
+.atp-search-input {
+	border: none;
+	background: transparent;
+	outline: none;
+	font-size: 12px;
+	color: #444;
+	width: 100%;
+	cursor: text;
+	line-height: 1;
+}
+
+.atp-search-input::placeholder {
+	color: #bbb;
+}
+
+.atp-search-wrap:focus-within {
+	border-color: #bbb;
+}
+
+.atp-toggle-btn {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #888;
+	transition: color 0.15s;
+	padding: 0;
+}
+
+.atp-toggle-btn:hover {
+	color: #444;
+}
+
+/* ── Dark mode ─────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+	#atp-tab-toggle-bar {
+		border-bottom-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.atp-search-wrap {
+		background: #1D1E20;
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.atp-search-icon {
+		color: #babfc5;
+	}
+
+	.atp-search-input {
+		color: #9da5ae;
+	}
+
+	.atp-search-input::placeholder {
+		color: #6b737c;
+	}
+
+	.atp-search-wrap:focus-within {
+		border-color: rgba(255, 255, 255, 0.22);
+	}
+
+	.atp-toggle-btn {
+		color: #9da5ae;
+	}
+
+	.atp-toggle-btn:hover {
+		color: #babfc5;
+	}
+}

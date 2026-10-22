@@ -1,0 +1,17 @@
+/**
+ * Class Highlighter Feature Styles
+ *
+ * The injected menu item and section header are cloned from real
+ * native MUI elements at runtime (see class-highlighter.js), so they
+ * inherit their appearance — including hover, focus, spacing — from
+ * Elementor's own stylesheet. No overrides are needed here.
+ *
+ * The marker classes below exist only so the JS can identify and
+ * de-duplicate its own injections.
+ *
+ * @package Atomora
+ */
+
+.atp-highlight-menu-item {}
+.atp-menu-section-header {}
+.atp-menu-section-divider {}

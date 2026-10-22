@@ -1,0 +1,19 @@
+{% import 'elementor/macros' as m %}
+{%- set part = settings.part | default('content') -%}
+{%- set classes = settings.classes | default([]) | merge( [ 'atomora-review', 'atomora-review--part', 'atomora-review--part-' ~ part ] ) | join(' ') -%}
+{%- if show is not defined or show -%}
+<{{ tag | e('html_tag') }} class="{{ classes }}" data-interaction-id="{{ interaction_id }}"
+	{{- m.render_custom_attributes(settings) }}>
+{%- if part == 'avatar' -%}
+{%- set size = settings.avatar_size | default(48) -%}
+{%- if avatar_html is defined -%}{{ avatar_html | raw }}{%- else -%}<span style="display:inline-block;width:{{ size }}px;height:{{ size }}px;border-radius:50%;background:rgba(128,128,128,.35)"></span>{%- endif -%}
+{%- elseif part == 'author' -%}{{ author | default('Jane Doe') }}
+{%- elseif part == 'verified' -%}{{ settings.verified_label | default('Verified owner') }}
+{%- elseif part == 'date' -%}<time datetime="{{ date_iso | default('') }}">{{ date_text | default('January 1, 2026') }}</time>
+{%- elseif part == 'rating' -%}
+{%- if stars_html is defined -%}{{ stars_html | raw }}{%- else -%}<span class="atomora-review__stars" role="img"><span class="atomora-review__stars-empty" aria-hidden="true">★★★★★</span><span class="atomora-review__stars-fill" aria-hidden="true" style="width:90%">★★★★★</span></span>{%- endif -%}
+{%- else -%}
+{%- if content_html is defined -%}{{ content_html | raw }}{%- else -%}<p>Great product, exactly as described. Fast delivery and nicely packed.</p>{%- endif -%}
+{%- endif -%}
+</{{ tag | e('html_tag') }}>
+{%- endif -%}
