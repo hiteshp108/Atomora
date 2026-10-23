@@ -21,7 +21,7 @@ Atomora is a WordPress plugin that extends Elementor's Atomic Editor (Editor V4)
 ## Installation
 
 1. Download this repository and extract it, or clone it with Git.
-2. Upload the `atomora` directory to `/wp-content/plugins/`.
+2. Upload the repository folder (the folder containing `atomora.php`) to `/wp-content/plugins/`.
 3. Activate **Atomora** from the Plugins screen.
 4. Enable the Atomic Editor in Elementor's settings.
 5. Edit a page with Elementor and find Atomora widgets in the **Atomora** category.
@@ -36,4 +36,4 @@ Plugin data is retained when Atomora is deleted unless the deletion option is en
 
 ## Plugin details
 
-The plugin source is in [`atomora/`](atomora/). See the [plugin readme](atomora/readme.txt) for the full feature list, FAQ, requirements, and changelog. Current version: **1.0.8**.
+The plugin files, including the main [`atomora.php`](atomora.php) entrypoint, are at the repository root. See the [plugin readme](readme.txt) for the full feature list, FAQ, requirements, and changelog. Current version: **1.0.8**.
