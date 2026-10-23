@@ -572,7 +572,7 @@ class Product_Card extends Atomic_Widget_Base {
 		}
 
 		$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$product    = $product_id ? wc_get_product( $product_id ) : false;
+		$product    = $product_id ? \Atomora\Product_Access::public_product( wc_get_product( $product_id ) ) : false;
 
 		if ( ! $product instanceof \WC_Product ) {
 			wp_send_json_error( [ 'message' => __( 'Product not found.', 'atomora' ) ], 404 );
@@ -873,7 +873,7 @@ class Product_Card extends Atomic_Widget_Base {
 	private function resolve_product( array $settings ) {
 		if ( 'manual' === ( $settings['product_source'] ?? 'current' ) ) {
 			$product_id = absint( $settings['manual_product_id'] ?? 0 );
-			return $product_id ? wc_get_product( $product_id ) : false;
+			return $product_id ? \Atomora\Product_Access::public_product( wc_get_product( $product_id ) ) : false;
 		}
 
 		global $product;

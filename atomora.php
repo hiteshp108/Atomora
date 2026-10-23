@@ -43,7 +43,8 @@ define( 'ATOMORA_MIN_ELEMENTOR', '4.0.0' );
 require_once ATOMORA_PATH . 'includes/class-atomora-compatibility.php';
 
 if ( \Atomora\Compatibility::check() ) {
-	require_once ATOMORA_PATH . 'includes/class-atomora-loader.php';
+	require_once ATOMORA_PATH . 'includes/class-atomora-product-access.php';
+require_once ATOMORA_PATH . 'includes/class-atomora-loader.php';
 	\Atomora\Loader::instance();
 }
 
