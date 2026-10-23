@@ -677,7 +677,7 @@ class Gallery_Slider extends Atomic_Widget_Base {
 	private function resolve_product( array $settings ) {
 		if ( 'manual' === ( $settings['product_source'] ?? 'current' ) ) {
 			$product_id = absint( $settings['manual_product_id'] ?? 0 );
-			return $product_id ? wc_get_product( $product_id ) : false;
+			return $product_id ? \Atomora\Product_Access::public_product( wc_get_product( $product_id ) ) : false;
 		}
 
 		global $product;

@@ -135,7 +135,7 @@ trait Review_Part {
 		}
 
 		if ( $use_manual ) {
-			return $manual_id ? wc_get_product( $manual_id ) : false;
+			return $manual_id ? \Atomora\Product_Access::public_product( wc_get_product( $manual_id ) ) : false;
 		}
 
 		global $product;
